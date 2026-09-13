@@ -14,6 +14,8 @@ Install the following before working with the repository:
 
 The project uses Python for the modeling and data-processing pipeline and Dockerized Apache Airflow for workflow orchestration.
 
+For LSTM Autoencoder training, an NVIDIA GPU with compatible CUDA and cuDNN support is recommended for faster execution. GPU acceleration is optional; the training workflow can also run on CPU-only systems, although training may take substantially longer.
+
 ## 2. Clone the Repository
 
 Clone the repository and enter the project directory:
@@ -52,7 +54,23 @@ pip install -r requirements.txt
 
 The local virtual environment is primarily intended for development, analysis, notebooks, and running individual scripts.
 
-## 5. Repository Structure
+## 5. Optional NVIDIA CUDA GPU Acceleration
+
+NVIDIA CUDA is **recommended but not required** for LSTM Autoencoder training.
+
+When a compatible NVIDIA GPU is available, TensorFlow can use GPU acceleration through the configured Docker environment and its CUDA/cuDNN dependencies. This can substantially reduce LSTM training time and is useful when repeated experiments or retraining are required.
+
+CPU-only execution is supported for systems without an NVIDIA GPU. No changes to the thesis methodology are required when running on CPU; the main difference is computational performance and training time.
+
+For Dockerized Airflow training, the required CUDA and cuDNN environment is provided through the Airflow image configuration. GPU availability depends on the host system and its installed NVIDIA drivers.
+
+To verify whether TensorFlow can detect a GPU in the local Python environment, run:
+
+```powershell
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+
+## 6. Repository Structure
 
 The main source directories are:
 
@@ -67,7 +85,7 @@ src/
 
 Generated runtime files, local configuration, and experiment-specific artifacts may be excluded through `.gitignore`.
 
-## 6. Running the Data and Modeling Scripts Locally
+## 7. Running the Data and Modeling Scripts Locally
 
 Individual Python scripts can be executed from their corresponding directories while the virtual environment is active.
 
@@ -81,7 +99,7 @@ Run scripts from the repository paths expected by the source code so that relati
 
 The main LGMMA-X workflow consists of data preparation, chronological splitting, feature scaling, gap-aware sequence construction, LSTM Autoencoder training, reconstruction-error generation, GMM fitting, anomaly scoring, threshold calibration, proxy-label evaluation, and test evaluation.
 
-## 7. Running Apache Airflow with Docker
+## 8. Running Apache Airflow with Docker
 
 The Airflow project is located under:
 
@@ -141,7 +159,7 @@ src/airflow/requirements.txt
 
 This environment is separate from the repository-level `.venv`.
 
-## 8. Airflow DAGs
+## 9. Airflow DAGs
 
 The main thesis workflows are defined in:
 
@@ -160,13 +178,13 @@ When making changes to a DAG:
 
 Do not commit local Airflow logs, local `.env` files, or runtime cache files unless they are explicitly intended to be version-controlled.
 
-## 9. Accessing the Airflow Web Interface
+## 10. Accessing the Airflow Web Interface
 
 After the Docker services are running, use the port configured by the Airflow Compose setup to access the Airflow web interface in a browser.
 
 The exact credentials and local configuration are environment-specific. Keep local credentials and secrets out of Git.
 
-## 10. Running Jupyter / VS Code Notebooks
+## 11. Running Jupyter / VS Code Notebooks
 
 The analysis notebooks are stored under:
 
@@ -212,7 +230,7 @@ or:
 jupyter lab
 ```
 
-## 11. Notebook Roles
+## 12. Notebook Roles
 
 ### Notebook 01 — Comparative Model Analysis
 
@@ -226,7 +244,7 @@ Used for paired block-level comparison across models. The workflow includes norm
 
 Used for dataset exploration, test-sequence category analysis, proxy-label distributions, and visualization of the LGMMA-X test results by proxy anomaly condition.
 
-## 12. Reproducibility and Artifact Alignment
+## 13. Reproducibility and Artifact Alignment
 
 The thesis experiments rely on multiple generated artifacts. When rerunning experiments, make sure that the following remain aligned:
 
@@ -245,7 +263,7 @@ Do not mix artifacts from earlier experimental runs with the corrected final exp
 
 For the current corrected experiment, the held-out test population contains 21,749 sequences and the LGMMA-X validation-calibrated threshold is 0.719680.
 
-## 13. Git Workflow
+## 14. Git Workflow
 
 The current `main` branch is the canonical working branch for future thesis revisions.
 
@@ -272,7 +290,7 @@ git push origin main
 
 Avoid committing generated logs, local secrets, virtual-environment files, temporary diagnostic scripts, or ignored statistical-comparison artifacts.
 
-## 14. Cleaning Generated Runtime Files
+## 15. Cleaning Generated Runtime Files
 
 Airflow generates logs, Python creates `__pycache__` directories, and experiments may produce local model/data artifacts. Before deleting anything, inspect Git's view of the working tree:
 
@@ -288,7 +306,7 @@ git clean -nd
 
 Do not use `git clean -fdx` casually because it also removes ignored files and may delete local configuration or environment files.
 
-## 15. Troubleshooting
+## 16. Troubleshooting
 
 ### Docker port or container conflicts
 
@@ -318,7 +336,7 @@ If Git reports that a directory cannot be deleted during a branch checkout or me
 
 Stop and verify artifact alignment before using the output. Do not replace expected values with older results simply to make a notebook pass its assertions.
 
-## 16. Thesis Reporting Rule
+## 17. Thesis Reporting Rule
 
 The repository contains implementation and experimental evidence for the thesis. The written thesis should use results from the corrected, reproducible experiment and should not mix values from obsolete runs.
 
