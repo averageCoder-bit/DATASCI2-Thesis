@@ -110,6 +110,7 @@ def load_sequence_metadata(
     )
 
 
+
 def calculate_flash_movement(
     df: pd.DataFrame,
     h: int = FLASH_FORWARD_CANDLES,
@@ -118,17 +119,13 @@ def calculate_flash_movement(
     """
     Calculate flash-movement metrics.
 
-    Shock:
-        |P[t+h] - P[t]|
+    A valid flash movement requires:
+    1. An initial directional price shock.
+    2. A subsequent movement in the opposite direction.
+    3. A retracement of at least 50% of the shock.
 
-    Reversal:
-        |P[t+h+r] - P[t+h]|
-
-    Retracement ratio:
-        Reversal / Shock
-
-    Calculations are performed independently within each continuous
-    segment, preventing movement calculations from crossing timestamp gaps.
+    Calculations are performed independently within
+    each continuous timestamp segment.
     """
 
     result = df.copy()
@@ -149,15 +146,23 @@ def calculate_flash_movement(
         shock = np.full(n, np.nan)
         reversal = np.full(n, np.nan)
 
-        # Need t+h+r to exist.
         for i in range(n - h - r):
-            shock[i] = abs(
+
+            initial_move = (
                 prices[i + h] - prices[i]
             )
 
-            reversal[i] = abs(
+            subsequent_move = (
                 prices[i + h + r] - prices[i + h]
             )
+
+            shock[i] = abs(initial_move)
+
+            # A reversal must oppose the initial move.
+            if initial_move * subsequent_move < 0:
+                reversal[i] = abs(subsequent_move)
+            else:
+                reversal[i] = 0.0
 
         retracement_ratio = np.divide(
             reversal,
@@ -167,16 +172,19 @@ def calculate_flash_movement(
         )
 
         result.loc[indices, "shock"] = shock
+
         result.loc[
             indices,
             "reversal",
         ] = reversal
+
         result.loc[
             indices,
             "retracement_ratio",
         ] = retracement_ratio
 
     return result
+
 
 
 def derive_thresholds(
@@ -649,6 +657,8 @@ def main() -> None:
     # Derive thresholds ONLY from training data
     # ---------------------------------------------------------
 
+    train_df = calculate_flash_movement(train_df)
+    target_df = calculate_flash_movement(target_df)
     thresholds = derive_thresholds(
         train_df
     )
