@@ -1,2 +1,0 @@
-test_sequences,proxy_anomalous,proxy_anomalous_pct,normal_error_mean,normal_error_median,normal_error_std,normal_error_min,normal_error_max,anomalous_error_mean,anomalous_error_median,anomalous_error_std,anomalous_error_min,anomalous_error_max,roc_auc,pr_auc
-21749,17829,81.9761828130029,0.71265846,0.6959344,0.12676781,0.42890748,1.2458954,1.2862929,1.1639566,0.48810026,0.48490492,3.8828135,0.9310287370038037,0.9845308954176699
