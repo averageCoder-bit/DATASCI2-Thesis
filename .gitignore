@@ -77,3 +77,6 @@ src/baseline/data/master_model_comparison.csv
 /lgmma_restored_weights_verification.json
 /phase5g_reconciliation_output.txt
 /phase5g_schema_probe_output.txt
+
+# Local raw market data
+/src/pipeline/data/raw/xauusd_m5_raw.csv
