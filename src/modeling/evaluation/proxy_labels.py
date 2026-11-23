@@ -678,11 +678,17 @@ def main() -> None:
     )
 
     analyze_criterion_overlap(labeled_target)
-    
+
+    # Diagnostics must examine only windows fully inside the target split.
+    # This changes no proxy flags or sequence-level labeling decisions.
+    target_metadata = metadata[
+        (metadata["start_timestamp"] >= target_start)
+        & (metadata["end_timestamp"] <= target_end)
+    ].copy()
 
     severity_df = analyze_sequence_severity(
         labeled_target,
-        metadata,
+        target_metadata,
     )
 
     print()
@@ -732,11 +738,7 @@ def main() -> None:
     # Select target sequences
     # ---------------------------------------------------------
 
-    target_metadata = metadata[
-        (metadata["start_timestamp"] >= target_start)
-        &
-        (metadata["end_timestamp"] <= target_end)
-    ].copy()
+    # Already filtered above for the target-partition diagnostics.
 
     # ---------------------------------------------------------
     # Aggregate timestep labels

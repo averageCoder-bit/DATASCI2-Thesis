@@ -1,0 +1,30 @@
+name: lgmma-phase5f2
+services:
+  airflow-verified:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lgmma-phase5f2-airflow:local
+    command: standalone
+    ports:
+      - "127.0.0.1:8082:8080"
+    environment:
+      AIRFLOW_HOME: /opt/airflow/phase5f2_state
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/phase5f2_dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      # Prevent the verified workload from discovering a GPU; do not install CUDA extras.
+      CUDA_VISIBLE_DEVICES: "-1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
+    volumes:
+      # Host repository is read-only, including its archived frozen inputs.
+      - ../../..:/opt/airflow/project:ro
+      # The ONLY writable research output subtree; must already exist on host.
+      - ../../../reproduction/verified_dag_runs:/opt/airflow/project/reproduction/verified_dag_runs:rw
+      # Only the copied verified DAG, not any historical DAGs.
+      - ./verified_dags:/opt/airflow/phase5f2_dags:ro
+      # Separate Airflow SQLite metadata/logs, not the historical Postgres volume.
+      - ./state:/opt/airflow/phase5f2_state:rw
+    restart: "no"
+    mem_limit: 5g

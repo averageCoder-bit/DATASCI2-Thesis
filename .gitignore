@@ -25,3 +25,55 @@ src/baseline/statistical_comparison/*_test_scores.csv
 src/baseline/statistical_comparison/paired_*.csv
 
 src/baseline/data/master_model_comparison.csv
+# Airflow Phase 5F.2 local runtime state
+# Includes SQLite database, logs, and generated auth credentials.
+/src/airflow/phase5f2/state/
+
+# LGMMA-X publication hygiene — add to the existing root .gitignore
+# Preserve the existing rules; do not replace them blindly.
+
+# Local credentials and configuration
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+**/*password*.json*
+**/*credentials*.json*
+
+# Uncommitted experimental outputs and private/local research assets
+/reproduction/
+/recovered_artifacts/
+/experiments/
+/src/modeling/data/
+/src/baseline/data/
+/src/airflow/phase5f2/state/
+
+# Binary datasets, checkpoints, caches, and notebooks
+*.npy
+*.npz
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pt
+*.pth
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# Locally packaged research archives; preserve offline
+/*.zip
+/LGMMA_Phase5F1_Verified_DAG_Candidate/
+/LGMMA_X_Phase5G_Corrected_Notebooks/
+
+# Root-level temporary diagnostics / generated status files
+/lgmma_*_diagnostic.json
+/lgmma_*_verification.json
+/lgmma_*_audit.json
+/lgmma_checkpoint_comparison_corrected.json
+/lgmma_provenance_audit.json
+/lgmma_restored_weights_verification.json
+/phase5g_reconciliation_output.txt
+/phase5g_schema_probe_output.txt
