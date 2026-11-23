@@ -21,8 +21,8 @@ For LSTM Autoencoder training, an NVIDIA GPU with compatible CUDA and cuDNN supp
 Clone the repository and enter the project directory:
 
 ```powershell
-git clone https://github.com/averageCoder-bit/data-sci-2-thesis.git
-cd data-sci-2-thesis
+git clone https://github.com/averageCoder-bit/DATASCI2-Thesis.git
+cd DATASCI2-Thesis
 ```
 
 The `main` branch contains the current stable implementation.
